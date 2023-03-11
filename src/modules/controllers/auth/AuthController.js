@@ -10,11 +10,12 @@ const {email, password} = req.body;
 console.log(req.body);
     if (!email || !password) throw Error("Missing fields");
     const existUser = await userSchema.find({email:{$eq:`${email}`}});
-
+console.log("datos de usuario:"+existUser[0].role);
     if ( await validatePassword(    password, existUser[0].password)) {
         const token = await generateToken({
-            id: existUser._id,
+            id: existUser[0]._id,
             email: email,
+            role:existUser[0].role,
             isLogged: true
         });
         res.status(200).json({token});
