@@ -1,12 +1,12 @@
 const {Router,Response} = require('express');
-const buyModel = require('../../models/BuyModel');
+const buySchema = require('../../models/BuyModel');
 const { validateError} = require("../../../utils/fuctions");
 
 const insert = async (req, res = Response) => {
     try {
         const { price, buy,user} = req.body;
         console.log(req.body);
-        const response = await buyModel({price,buy,user});
+        const response = await buySchema({price,buy,user});
         await response.save();
         res.status(200).json(response);
     } catch (error) {
@@ -19,7 +19,7 @@ const insert = async (req, res = Response) => {
 
 const getAll = async (req,res = Response) =>{
     try {
-        const results= await buyModel.find();
+        const results= await buySchema.find();
         res.status(200).json(results);
     } catch (err) {
         console.log(err);
@@ -31,7 +31,7 @@ const getAll = async (req,res = Response) =>{
 const getById = async (req,res = Response) =>{
     try {
         const {id} = req.params;
-        const results= await buyModel.findById(id);
+        const results= await buySchema.findById(id);
         res.status(200).json(results);
     } catch (err) {
         console.log(err);
