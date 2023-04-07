@@ -1,13 +1,30 @@
 const {Router,Response} = require('express');
 const buySchema = require('../../models/BuyModel');
+const userSchema = require("../../models/PersonModel")
 const { validateError} = require("../../../utils/fuctions");
 
 const insert = async (req, res = Response) => {
     try {
-        const { price, buy,user} = req.body;
-        console.log(req.body);
-        const response = await buySchema({price,buy,user});
+        const { price, buy,userId } = req.body;
+        const horaMx = new Date().toLocaleString("es-MX", {
+                timeZone: "America/Mexico_City",
+            hour12: false,
+            year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+            })
+            .replace(/[/]/g, "-")
+            .replace(/[,]/g, " ");
+        const response = await buySchema({price,buy,user: userId, date:horaMx });
         await response.save();
+
+        // actualiza la colección de usuarios con el ID de la compra creada
+        const user = await userSchema.findById(userId);
+        user.buys.push(response._id);
+        await user.save();
         res.status(200).json(response);
     } catch (error) {
         console.log(error);
@@ -19,7 +36,8 @@ const insert = async (req, res = Response) => {
 
 const getAll = async (req,res = Response) =>{
     try {
-        const results= await buySchema.find();
+        const results= await buySchema.find().select("_id buy price date user").populate("user","_id name email role ")
+            .sort({ date: -1 }); // -1 indica orden descendente;
         res.status(200).json(results);
     } catch (err) {
         console.log(err);
@@ -31,7 +49,7 @@ const getAll = async (req,res = Response) =>{
 const getById = async (req,res = Response) =>{
     try {
         const {id} = req.params;
-        const results= await buySchema.findById(id);
+        const results= await buySchema.findById(id).select("_id buy price date user").populate("user","_id name email role ");
         res.status(200).json(results);
     } catch (err) {
         console.log(err);

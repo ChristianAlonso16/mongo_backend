@@ -18,7 +18,8 @@ const insert = async (req, res = Response) => {
 };
 const getAll = async (req,res = Response) =>{
   try {
-    const results= await userSchema.find();
+    const results= await userSchema.find().select("_id name email buys createdAt role").
+    populate("buys","_id buy price createdAt");
     res.status(200).json(results);
   } catch (err) {
     console.log(err);
@@ -30,7 +31,7 @@ const getAll = async (req,res = Response) =>{
 const getById = async (req,res = Response) =>{
   try {
     const {id} = req.params;
-    const results= await userSchema.findById(id);
+    const results = await userSchema.findById(id).select("_id name email buys createdAt role").populate('buys');
     res.status(200).json(results);
   } catch (err) {
     console.log(err);

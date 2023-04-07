@@ -6,5 +6,5 @@ const categorySchema = new Schema({
         },
     }, {timestamps:true} //creacion
 )
-
+categorySchema.index({email:1}, {unique:true})
 module.exports = model('Category',categorySchema);

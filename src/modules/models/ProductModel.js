@@ -1,8 +1,7 @@
 const{Schema, model} = require('mongoose');
 
 const productSchema = new Schema({
-        _id: {type:Number,
-        require:true},
+
         name:{
             type:String,
             require:true
@@ -25,5 +24,6 @@ const productSchema = new Schema({
         }
     }, {timestamps:true} //creacion
 )
+productSchema.index({name:1}, {unique:true})
 
 module.exports = model('Product', productSchema);

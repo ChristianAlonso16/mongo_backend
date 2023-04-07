@@ -15,4 +15,6 @@ const worksShopSchema = new Schema({
     }
 }, {timestamps:true}
 )
+worksShopSchema.index({name:1}, {unique:true})
+
 module.exports = model('Taller',worksShopSchema);
