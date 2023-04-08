@@ -39,7 +39,7 @@ const getById = async (req,res = Response) =>{
     try {
         const {id} = req.params;
         const results= await categorySchema.findById(id).select("_id name createdAt products").populate("products");
-        res.status(200).json(results);
+        results != null ? res.status(200).json(results) : res.status(400).json({message:"La categoria no existe"})
     } catch (err) {
         console.log(err);
         const message = validateError(err);
@@ -50,10 +50,11 @@ const getById = async (req,res = Response) =>{
 
 const update = async (req, res = Response) => {
     try {
-        const {id, name} = req.body;
+        const{id} = req.params;
+        const {name} = req.body;
         console.log(req.body);
-        const category = await categorySchema.findOneAndUpdate(id,{name}, { useFindAndModify: false });
-        res.status(200).json(category);
+        const category = await categorySchema.findOneAndUpdate({_id: id}, {name: name}, {new: true});
+        res.status(200).json({message:"Actualizado correctemente",category});
     } catch (error) {
         console.log(error);
         const message = validateError(error);
@@ -63,9 +64,9 @@ const update = async (req, res = Response) => {
 
 const deleteById = async (req,res = Response) =>{
     try {
-        const {id} = req.body;
-        const results= await categorySchema.deleteOne({id});
-        res.status(200).json(results);
+        const {id} = req.params;
+        const results = await categorySchema.deleteOne({ _id: id });
+        res.status(200).json({message:"Eliminado con exito",results});
     } catch (err) {
         console.log(err);
         const message = validateError(err);
@@ -78,6 +79,6 @@ const categoryRouter = Router();
 categoryRouter.post('/', [], insert);
 categoryRouter.get('/',[],getAll);
 categoryRouter.get('/:id',[],getById);
-categoryRouter.put('/',[],update);
-categoryRouter.delete('/',[],deleteById);
+categoryRouter.put('/:id',[],update);
+categoryRouter.delete('/:id',[],deleteById);
 module.exports = {categoryRouter, };

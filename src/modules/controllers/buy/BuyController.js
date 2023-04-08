@@ -52,7 +52,7 @@ const getById = async (req,res = Response) =>{
     try {
         const {id} = req.params;
         const results= await buySchema.findById(id).select("_id buy price date user").populate("user","_id name email role ");
-        res.status(200).json(results);
+        results != null ? res.status(200).json(results) : res.status(400).json({message:"No existe la venta"});
     } catch (err) {
         console.log(err);
         const message = validateError(err);

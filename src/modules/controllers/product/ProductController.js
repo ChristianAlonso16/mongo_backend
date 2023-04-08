@@ -57,10 +57,11 @@ const getById = async (req,res = Response) =>{
 
 const update = async (req, res = Response) => {
     try {
-        const {id, name,description,price,category} = req.body;
+        const {id} = req.params;
+        const { name,description,price,category} = req.body;
         console.log(req.body);
-        const product = await productSchema.findByIdAndUpdate(id,  {name,description,price,category},{useFindAndModify: false });
-        res.status(200).json(product);
+        const product = await productSchema.findOneAndUpdate({_id:id},  {name:name,description:description,price:price,category:category},{new: true });
+        res.status(200).json({message:"Actualizado correctamente",product});
     } catch (error) {
         console.log(error);
         const message = validateError(error);
@@ -85,6 +86,6 @@ const productRouter = Router();
 productRouter.post('/', [], insert);
 productRouter.get('/',[],getAll);
 productRouter.get('/:id',[],getById);
-productRouter.put('/',[],update);
+productRouter.put('/:id',[],update);
 productRouter.delete('/:id',[],deleteById);
 module.exports = {productRouter, };
