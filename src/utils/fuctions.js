@@ -11,9 +11,13 @@ const validateError = (error) => {
         case 'Nothing found':
             return 'No data found';
         case 'Password mismatch':
-            return 'Credentials mismatch';
+            return 'Contraseña incorrecta';
         case 'User disabled':
             return 'User disabled';
+        case 'MongoServerError:':
+            return 'Ya existe'
+        case 'No existe':
+            return 'Ingrese un usuario valido'
         default:
             return 'Review request';
     }

@@ -3,17 +3,13 @@ const buySchema = new Schema({
         price:{
             type:Number,
             require:true},
-        buy:{
             product:{
-                type:String,
+                type:Schema.Types.ObjectId,
+                ref:"Product",
                 require: true
             },
-            category:{
-                type:String,
-                require: true
-            }
-        },
-    user: { type: Schema.Types.ObjectId, ref: "Usuario" },
+
+    user: { type: Schema.Types.ObjectId, ref: "Usuario", require:true },
 
     date:{type: String}
     }, {timestamps:true} //creacion

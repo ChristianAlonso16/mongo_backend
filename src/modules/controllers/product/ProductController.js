@@ -1,14 +1,26 @@
 const {Router,Response} = require('express');
 const productSchema = require('../../models/ProductModel');
 const { validateError} = require("../../../utils/fuctions");
-
+const categorySchema = require("../../models/CategoryModel")
 const insert = async (req, res = Response) => {
     try {
-        const { name,description,price,category } = req.body;
+        const { name,description,price,categoryId } = req.body;
         console.log(req.body);
-        const produtc = await productSchema({ name,description, price, category});
-        await produtc.save();
-        res.status(200).json(produtc);
+
+        //valida que no registre un producto ya existente
+        const existProduct = await productSchema.findOne({name});
+        if(existProduct){
+            res.status(400).json({message:"El producto ya existe"})
+        }else{
+            const response = await productSchema({ name,description, price, category:categoryId});
+            await response.save();
+
+            // actualiza la colección de categoria con el ID del producto creado
+            const category = await categorySchema.findById(categoryId);
+            category.products.push(response._id)
+            await category.save();
+            res.status(200).json({message:"Creado con exito", response});
+        }
     } catch (error) {
         console.log(error);
         const message = validateError(error);
@@ -19,7 +31,8 @@ const insert = async (req, res = Response) => {
 
 const getAll = async (req,res = Response) =>{
     try {
-        const results= await productSchema.find();
+        const results= await productSchema.find().select("_id name description  price count createdAt category").
+        populate("category","_id name");
         res.status(200).json(results);
     } catch (err) {
         console.log(err);
@@ -31,8 +44,9 @@ const getAll = async (req,res = Response) =>{
 const getById = async (req,res = Response) =>{
     try {
         const {id} = req.params;
-        const results= await productSchema.findById(id);
-        res.status(200).json(results);
+        const results= await productSchema.findById(id).select("_id name description  price count createdAt category").
+        populate("category","_id name");
+        results != null ? res.status(200).json(results) : res.status(400).json({message:"El producto no existe"})
     } catch (err) {
         console.log(err);
         const message = validateError(err);
@@ -56,9 +70,9 @@ const update = async (req, res = Response) => {
 
 const deleteById = async (req,res = Response) =>{
     try {
-        const {id} = req.body;
-        const results= await productSchema.deleteOne({id});
-        res.status(200).json(results);
+        const {id} = req.params;
+        const results= await productSchema.findByIdAndDelete({_id:id});
+        res.status(200).json({message:"Eliminado con exito",results});
     } catch (err) {
         console.log(err);
         const message = validateError(err);
@@ -72,5 +86,5 @@ productRouter.post('/', [], insert);
 productRouter.get('/',[],getAll);
 productRouter.get('/:id',[],getById);
 productRouter.put('/',[],update);
-productRouter.delete('/',[],deleteById);
+productRouter.delete('/:id',[],deleteById);
 module.exports = {productRouter, };

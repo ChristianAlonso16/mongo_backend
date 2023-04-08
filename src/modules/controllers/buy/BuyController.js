@@ -18,7 +18,7 @@ const insert = async (req, res = Response) => {
             })
             .replace(/[/]/g, "-")
             .replace(/[,]/g, " ");
-        const response = await buySchema({price,buy,user: userId, date:horaMx });
+        const response = await buySchema({price,product:buy.idProduct,user: userId, date:horaMx });
         await response.save();
 
         // actualiza la colección de usuarios con el ID de la compra creada
@@ -36,8 +36,10 @@ const insert = async (req, res = Response) => {
 
 const getAll = async (req,res = Response) =>{
     try {
-        const results= await buySchema.find().select("_id buy price date user").populate("user","_id name email role ")
-            .sort({ date: -1 }); // -1 indica orden descendente;
+        const results= await buySchema.find().select("_id product price date user").
+        populate({path: "user", select: "_id name email role",}).
+        populate({path: "product", select: "name price",}).
+        sort({ date: -1 }); // -1 indica orden descendente;
         res.status(200).json(results);
     } catch (err) {
         console.log(err);

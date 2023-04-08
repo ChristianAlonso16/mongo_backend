@@ -6,9 +6,16 @@ const insert = async (req, res = Response) => {
     try {
         const { name} = req.body;
         console.log(req.body);
-        const category = await categorySchema({name});
-        await category.save();
-        res.status(200).json(category);
+        //valida que no se registre una categoria existente
+        const existCategory = await  categorySchema.findOne({name});
+        if (existCategory){
+            res.status(400).json({message:"La categoria ya existe"})
+        }else{
+            const category = await categorySchema({name});
+            await category.save();
+            res.status(200).json({message:"Registrada correctamente",category});
+        }
+
     } catch (error) {
         console.log(error);
         const message = validateError(error);
@@ -19,7 +26,7 @@ const insert = async (req, res = Response) => {
 
 const getAll = async (req,res = Response) =>{
     try {
-        const results= await categorySchema.find();
+        const results= await categorySchema.find().select("_id name createdAt products").populate("products");
         res.status(200).json(results);
     } catch (err) {
         console.log(err);
@@ -31,7 +38,7 @@ const getAll = async (req,res = Response) =>{
 const getById = async (req,res = Response) =>{
     try {
         const {id} = req.params;
-        const results= await categorySchema.findById(id);
+        const results= await categorySchema.findById(id).select("_id name createdAt products").populate("products");
         res.status(200).json(results);
     } catch (err) {
         console.log(err);
