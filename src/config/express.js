@@ -1,5 +1,4 @@
 const express = require('express');
-const handle = require('express-handlebars');
 const cors = require('cors');
 const {userRouter,productRouter,categoryRouter,signRouter, buyRouter, worksShop,} = require("../modules/controllers/routes")
 require('dotenv').config();

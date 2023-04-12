@@ -5,6 +5,8 @@ const { validateError} = require("../../../utils/fuctions");
 const insert = async (req, res = Response) => {
     try {
         const { name} = req.body;
+        if(!name)   throw Error("Missing fields")
+
         console.log(req.body);
         //valida que no se registre una categoria existente
         const existCategory = await  categorySchema.findOne({name});
@@ -26,7 +28,8 @@ const insert = async (req, res = Response) => {
 
 const getAll = async (req,res = Response) =>{
     try {
-        const results= await categorySchema.find().select("_id name createdAt products").populate("products");
+        const results= await categorySchema.find().select("_id name createdAt products").
+        populate("products","_id name description price createdAt");
         res.status(200).json(results);
     } catch (err) {
         console.log(err);
@@ -52,6 +55,8 @@ const update = async (req, res = Response) => {
     try {
         const{id} = req.params;
         const {name} = req.body;
+        if(!name || !id)   throw Error("Missing fields")
+
         console.log(req.body);
         const category = await categorySchema.findOneAndUpdate({_id: id}, {name: name}, {new: true});
         res.status(200).json({message:"Actualizado correctemente",category});

@@ -6,6 +6,8 @@ const userSchema = require("../../models/PersonModel");
 const insert = async (req, res = Response) => {
     try {
         const { name,price,category} = req.body;
+        if(!name || !price || !category)  throw Error("Missing fields")
+
         console.log(req.body);
         //valida que no exista un servicio igual
         const existUser = await worksShopSchema.findOne({name});
@@ -62,6 +64,7 @@ const updateById = async (req,res = Response) =>{
     try {
         const {id} = req.params;
         const {name,price,category} = req.body;
+        if(!name || !price || !category || !id)  throw Error("Missing fields")
         const service = await worksShopSchema.findOneAndUpdate({_id:id},{name:name,price:price,category:category}, {new:true})
         res.status(200).json({message:"Actualizado correctamente",service})
     }catch (err){

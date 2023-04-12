@@ -5,7 +5,7 @@ const validateError = (error) => {
         case 'Wrong type':
             return 'Review request fields';
         case 'Missing fields':
-            return 'Validate fields';
+            return 'Faltan campos';
         case 'Inexistent role':
             return 'Role not registered';
         case 'Nothing found':

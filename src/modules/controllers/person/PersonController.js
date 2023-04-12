@@ -1,14 +1,13 @@
 const {Router,Response} = require('express');
 const userSchema = require('../../models/PersonModel');
 const { hashPassword, validateError} = require("../../../utils/fuctions");
-const productSchema = require("../../models/ProductModel");
-const categorySchema = require("../../models/CategoryModel");
+const {check} = require("express-validator");
 
 const insert = async (req, res = Response) => {
   try {
     const { name,email,password,role } = req.body;
     console.log(req.body);
-
+    if(!name || !email || !password || !role) throw Error("Missing fields")
     //valida que no registre un usuario existente
     const existUser = await userSchema.findOne({email});
     if(existUser){
@@ -68,6 +67,8 @@ const update = async (req, res = Response) => {
   try {
     const {id} = req.params;
     const { name,email,password } = req.body;
+    if(!name || !email || !password) throw Error("Missing fields")
+
     console.log(req.body);
     const user = await userSchema.findOneAndUpdate({_id: id},{name:name,email:email,password : await hashPassword(password)},{new: true});
     res.status(200).json({message:"Actualizado con exito",user});

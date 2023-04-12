@@ -1,5 +1,4 @@
 const { Router, Response } = require('express');
-
 const { generateToken } = require("../../../config/jwt");
 const { validatePassword, validateError} = require("../../../utils/fuctions");
 const userSchema = require('../../models/PersonModel');
@@ -9,7 +8,7 @@ try {
 const {email, password} = req.body;
 console.log(req.body);
     if (!email || !password) throw Error("Missing fields");
-    const existUser = await userSchema.find({email:{$eq:`${email}`}});
+    const existUser = await userSchema.aggregate([{$match: {email: email,}}]);
     if ( await validatePassword(    password, existUser[0].password)) {
         const token = await generateToken({
             id: existUser[0]._id,

@@ -6,7 +6,7 @@ const insert = async (req, res = Response) => {
     try {
         const { name,description,price,categoryId } = req.body;
         console.log(req.body);
-
+            if(!name || !description || !price || !categoryId) throw Error("Missing fields")
         //valida que no registre un producto ya existente
         const existProduct = await productSchema.findOne({name});
         if(existProduct){
@@ -59,6 +59,7 @@ const update = async (req, res = Response) => {
     try {
         const {id} = req.params;
         const { name,description,price,category} = req.body;
+        if(!name || !description || !price || !categoryId) throw Error("Missing fields")
         console.log(req.body);
         const product = await productSchema.findOneAndUpdate({_id:id},  {name:name,description:description,price:price,category:category},{new: true });
         res.status(200).json({message:"Actualizado correctamente",product});

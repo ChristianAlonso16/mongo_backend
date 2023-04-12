@@ -6,6 +6,8 @@ const { validateError} = require("../../../utils/fuctions");
 const insert = async (req, res = Response) => {
     try {
         const { price, buy,userId } = req.body;
+        if(!price || !buy || !userId)  throw Error("Missing fields")
+
         const horaMx = new Date().toLocaleString("es-MX", {
                 timeZone: "America/Mexico_City",
             hour12: false,
