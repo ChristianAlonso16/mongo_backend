@@ -28,7 +28,8 @@ const insert = async (req, res = Response) => {
 const getAll = async (req,res = Response) =>{
   try {
     const results= await userSchema.find().select("_id name email createdAt role buys").
-    populate("buys","_id buy price date");
+    populate("buys","_id buy price date").sort({ date: -1 }); // -1 indica orden descendente;
+    ;
     res.status(200).json(results);
   } catch (err) {
     console.log(err);
